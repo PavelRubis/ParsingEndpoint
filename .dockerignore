@@ -1,0 +1,7 @@
+.git
+**/bin
+**/obj
+**/TestResults
+.vs
+.vscode
+
