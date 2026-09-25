@@ -17,26 +17,25 @@ services:
     build: .
     working_dir: /workspace
     volumes:
-      - ./:/workspace
+      - ./src/ParsingEndpoint:/workspace/src/ParsingEndpoint
       - nuget_cache:/root/.nuget/packages
-      - api_obj:/workspace/src/ParsingEndpoint/obj
-      - api_bin:/workspace/src/ParsingEndpoint/bin
+    tmpfs:
+      - /workspace/src/ParsingEndpoint/obj
+      - /workspace/src/ParsingEndpoint/bin
     environment:
       ASPNETCORE_URLS: http://0.0.0.0:8090
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=postgres;Username=postgres;Password=parsing_dev_password
       YUNIQL_CONNECTION_STRING: Host=postgres;Port=5432;Database=postgres;Username=postgres;Password=parsing_dev_password
-      DOTNET_ROLL_FORWARD: Major
     ports:
       - "127.0.0.1:8090:8090"
     depends_on:
       postgres:
         condition: service_healthy
     command: >-
-      sh -ec 'dotnet tool restore &&
-      dotnet restore src/ParsingEndpoint/ParsingEndpoint.csproj &&
-      dotnet build src/ParsingEndpoint/ParsingEndpoint.csproj --no-restore &&
-      dotnet tool run yuniql -- run --platform postgresql --path src/ParsingEndpoint/Database/Migrations &&
-      dotnet run --project src/ParsingEndpoint/ParsingEndpoint.csproj --no-build --no-restore --no-launch-profile'
+      sh -ec 'dotnet restore src/ParsingEndpoint/ParsingEndpoint.csproj &&
+      dotnet build src/ParsingEndpoint/ParsingEndpoint.csproj -c Release --no-restore &&
+      /tools/yuniql run --platform postgresql --path src/ParsingEndpoint/Database/Migrations &&
+      exec dotnet src/ParsingEndpoint/bin/Release/net10.0/ParsingEndpoint.dll'
 
   pgadmin:
     image: dpage/pgadmin4:9.18
@@ -61,9 +60,3 @@ volumes:
   postgres_data:
   pgadmin_data:
   nuget_cache:
-  api_obj:
-  api_bin:
-
-
-
-

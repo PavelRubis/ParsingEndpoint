@@ -7,9 +7,9 @@
 Из корня проекта выполните:
 
 ```sh
-docker compose up -d
+docker compose up --build -d
 ```
-Исходники API монтируются в контейнер; при каждом старте он восстанавливает зависимости, собирает приложение, запускает Yuniql и затем запускает API. Yuniql применяет SQL из `src/ParsingEndpoint/Database/Migrations` к существующей базе `postgres`. Данные PostgreSQL хранятся в именованном томе, смонтированном в `/var/lib/postgresql`.
+Папка `src/ParsingEndpoint` монтируется в API-контейнер. При каждом старте контейнер выполняет `dotnet restore`, собирает ASP.NET-приложение из смонтированных исходников, запускает Yuniql и затем API. Yuniql применяет SQL из `src/ParsingEndpoint/Database/Migrations` к существующей базе `postgres`. Пакеты NuGet кэшируются в отдельном томе. После изменения кода достаточно перезапустить API: `docker compose restart api`. Данные PostgreSQL хранятся в именованном томе, смонтированном в `/var/lib/postgresql`.
 Всего compose запускает три сервиса: API, PostgreSQL 18 и pgAdmin.
 
 - API: <http://localhost:8090/api/parse>

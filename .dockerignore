@@ -1,7 +1,2 @@
-.git
-**/bin
-**/obj
-**/TestResults
-.vs
-.vscode
-
+# Application sources are mounted by Compose
+*
